@@ -1,0 +1,145 @@
+.login-container {
+  display: flex;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+/* Lado izquierdo */
+.form-section {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center; /* centra solo títulos y logo */
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.logo-img {
+  width: 90px;
+  margin-right: 10px;
+}
+
+.title .ub {
+  font-weight: bold;
+  font-size: 28px;
+  color: #5b2be0;
+}
+
+.title .unibank {
+  font-size: 22px;
+  color: #444;
+}
+
+h2 {
+  margin: 10px 0 5px;
+}
+
+p {
+  margin-bottom: 20px;
+  color: #666;
+}
+
+/* Formulario */
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-group {
+  width: 100%;
+  max-width: 300px;
+  text-align: left; /* alinea label e input a la izquierda */
+}
+
+label {
+  display: block;
+  margin: 10px 0 5px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+input {
+  margin-bottom: 15px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.password-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.password-field a {
+  font-size: 12px;
+  color: #5b2be0;
+  text-decoration: none;
+}
+
+/* Botón */
+.login-btn {
+  display: inline-block;
+  background: #6b46f2;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  margin-top: 15px;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.login-btn:hover {
+  background: #5b2be0;
+}
+
+.register-link {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.register-link a {
+  color: #5b2be0;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+/* Lado derecho */
+.image-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+}
+
+.image-section img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+  }
+
+  .image-section {
+    display: none;
+  }
+
+  .form-section {
+    padding: 20px;
+  }
+}

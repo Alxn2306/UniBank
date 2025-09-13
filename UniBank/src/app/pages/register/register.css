@@ -1,0 +1,82 @@
+.register-container {
+  display: flex;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+/* Lado izquierdo */
+.form-section {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.logo-img {
+  width: 90px;
+  margin-right: 10px;
+}
+
+.title .ub {
+  font-weight: bold;
+  font-size: 28px;
+  color: #5b2be0;
+}
+
+.title .unibank {
+  font-size: 22px;
+  color: #444;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+input, .file-upload {
+  margin: 10px 0;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.register-btn {
+  background: #6b46f2;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  margin-top: 15px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.register-btn:hover {
+  background: #5b2be0;
+}
+
+.terms {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+/* Lado derecho */
+.image-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+}
+
+.image-section img {
+  max-width: 100%;
+  height: auto;
+}
