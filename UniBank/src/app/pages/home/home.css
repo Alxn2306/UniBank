@@ -1,0 +1,186 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100vh;
+  padding: 40px;
+  font-family: 'Poppins', sans-serif;
+  position: relative;
+  flex-wrap: wrap; /* permite que se acomode en pantallas pequeñas */
+}
+
+/* Imagen del banco */
+.bank-image img {
+  width: 100%;
+  max-width: 800px; /* mantiene proporción en pantallas grandes */
+  height: auto;
+}
+
+/* Contenido derecho */
+.content {
+  max-width: 500px;
+  flex: 1;
+  min-width: 280px; /* para que no se encoja demasiado */
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+.logo-img {
+  width: 80px;
+  margin-right: 8px;
+}
+
+.title {
+  font-size: 22px;
+}
+
+.ub {
+  font-size: 36px;
+  font-weight: bold;
+  color: #7d3cff;
+}
+
+.unibank {
+  font-size: 20px;
+  color: #444;
+}
+
+/* Descripción */
+.description {
+  margin: 15px 0 25px;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* Roles */
+.role-title {
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin-bottom: 15px;
+}
+
+.roles {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap; /* que se acomoden en varias filas */
+  justify-content: center;
+}
+
+.role {
+  text-align: center;
+  flex: 1 1 120px;
+}
+
+.role img {
+  width: 60px;
+  margin-bottom: 10px;
+}
+
+.btn {
+  display: block;
+  background: #7d3cff;
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 10px;
+  margin: 5px auto;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+  transition: background 0.3s ease;
+}
+
+.btn:hover {
+  background: #682ed1;
+}
+
+/* Botón de registro */
+.register-btn {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  background: #7d3cff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+  transition: background 0.3s ease;
+}
+
+.register-btn:hover {
+  background: #682ed1;
+}
+
+/* ------------------------------
+   📱 MEDIA QUERIES
+--------------------------------*/
+
+/* Tablets */
+@media (max-width: 992px) {
+  .container {
+    flex-direction: column;
+    text-align: center;
+    height: auto;
+    padding: 20px;
+  }
+
+  .bank-image img {
+    max-width: 500px;
+    margin-bottom: 30px;
+  }
+
+  .content {
+    max-width: 90%;
+  }
+
+  .roles {
+    gap: 20px;
+  }
+}
+
+/* Celulares */
+@media (max-width: 576px) {
+  .ub {
+    font-size: 28px;
+  }
+
+  .unibank {
+    font-size: 16px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .bank-image img {
+    max-width: 100%;
+  }
+
+  .roles {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .role img {
+    width: 30px;
+  }
+
+  .btn {
+    padding: 6px 14px;
+    font-size: 14px;
+  }
+
+  .register-btn {
+    top: 15px;
+    right: 15px;
+    padding: 8px 14px;
+    font-size: 14px;
+  }
+}
