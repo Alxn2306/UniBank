@@ -1,35 +1,37 @@
 <div class="app-container">
   <!-- Sidebar -->
   <aside class="sidebar">
-    <button routerLink="/cliente/mi-cuenta" routerLinkActive="active">
-      <img src="assets/iconos/cuenta.png" alt="Mi cuenta" />
-      Mi cuenta
-    </button>
 
-    <button routerLink="/cliente/transferencias" routerLinkActive="active">
+    <a href="cliente-layout/micuenta" class="btn">
+      <img src="assets/iconos/transferencias.png" alt="Mi cuenta" />
+      Mi cuenta
+    </a>
+
+    <a href="cliente-layout/transferencias" class="btn">
       <img src="assets/iconos/transferencias.png" alt="Transferencias" />
       Transferencias
-    </button>
+    </a>
 
-    <button routerLink="/cliente/movimientos" routerLinkActive="active">
-      <img src="assets/iconos/movimientos.png" alt="Movimientos" />
+    <a href="/cliente-layout/movimientos" class="btn">
+      <img src="assets/iconos/transferencias.png" alt="Movimientos" />
       Movimientos
-    </button>
+    </a>
 
-    <button routerLink="/cliente/credito" routerLinkActive="active">
-      <img src="assets/iconos/credito.png" alt="Crédito" />
+    <a href="/cliente-layout/credito" class="btn">
+      <img src="assets/iconos/transferencias.png" alt="Credito" />
       Crédito
-    </button>
+    </a>
 
-    <button routerLink="/cliente/prestamos" routerLinkActive="active">
-      <img src="assets/iconos/prestamos.png" alt="Préstamos" />
+    <a href="/cliente-layout/prestamos" class="btn">
+      <img src="assets/iconos/transferencias.png" alt="Prestamos" />
       Préstamos
-    </button>
+    </a>
 
-    <button >
-      <img src="assets/iconos/cerrar.png" alt="Cerrar sesión" />
+
+    <a href="" class="btn">
+      <img src="assets/iconos/transferencias.png" alt="Cerrar sesión" />
       Cerrar sesión
-    </button>
+    </a>
   </aside>
 
   <!-- Contenido principal -->
@@ -42,8 +44,11 @@
     </header>
 
     <main>
-
+      <!-- Aquí se renderiza el hijo activo -->
+      <router-outlet></router-outlet>
     </main>
   </div>
 </div>
+
+
 

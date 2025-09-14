@@ -15,7 +15,7 @@ import { Transferencias } from './pages/cliente/transferencias/transferencias';
 
 
 export const routes: Routes = [
-    {path: '',component:Home},
+    {path: '',component:Home, },
     {path: 'register',component: Register},
     {path: 'logincliente',component: Logincliente},
     {path: 'loginejecutivo',component: Loginejecutivo},
@@ -25,14 +25,12 @@ export const routes: Routes = [
         component: ClienteLayout,
         children: [
             {path:'micuenta',component: Micuenta},
-            {path:'credido',component: Credito },
+            {path:'credito',component: Credito },
             {path:'movimientos',component: Movimientos},
             {path:'prestamos',component: Prestamos},
-            {path:'trasferencias',component: Transferencias}
+            {path:'transferencias',component: Transferencias}
         ]
 
      }
-
-
 
 ];
