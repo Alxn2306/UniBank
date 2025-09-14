@@ -1,0 +1,41 @@
+<div class="app-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+
+    <a href="ejecutivo-layout/datoscliente" class="btn">
+      <img src="Iconos/datoscliente.png" alt="Mi cuenta" />
+      Datos de clientes
+    </a>
+
+    <a href="ejecutivo-layout/datoscredito" class="btn">
+      <img src="Iconos/datoscreditos.png" alt="Transferencias" />
+      Datos de creditos
+    </a>
+
+    <a href="ejecutivo-layout/datoscuenta" class="btn">
+      <img src="Iconos/datoscuentas.png" alt="Movimientos" />
+      Datos de cuentas
+    </a>
+
+
+    <a href="" class="btn">
+      <img src="Iconos/cerrars.png" alt="Cerrar sesión" />
+      Cerrar sesión
+    </a>
+  </aside>
+
+  <!-- Contenido principal -->
+  <div class="main-content">
+    <header class="header">
+      <img src="Iconos/Unibank2.png" alt="Logo" class="logo" />
+      <div class="user-icon">
+        <img src="Imagenes/USUARIO.jpg" alt="Usuario" />
+      </div>
+    </header>
+
+    <main>
+      <!-- Aquí se renderiza el hijo activo -->
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
