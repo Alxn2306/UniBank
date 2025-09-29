@@ -1,27 +1,29 @@
 <div class="app-container">
   <!-- Sidebar -->
   <aside class="sidebar">
-
-    <!-- Cambia href por routerLink con rutas relativas -->
+     <img src="Iconos/Unibank.png" alt="Logo" class="logo" />
     <a routerLink="datoscliente" class="btn" routerLinkActive="active">
       <img src="Iconos/datoscliente.png" alt="Datos de clientes" />
-      Datos de clientes
+      <span>Datos de clientes</span>
     </a>
 
     <a routerLink="datoscredito" class="btn" routerLinkActive="active">
       <img src="Iconos/datoscreditos.png" alt="Datos de creditos" />
-      Datos de creditos
+      <span>Datos de creditos</span>
     </a>
 
     <a routerLink="datoscuenta" class="btn" routerLinkActive="active">
       <img src="Iconos/datoscuentas.png" alt="Datos de cuentas" />
-      Datos de cuentas
+      <span>Datos de cuentas</span>
     </a>
 
-    <!-- Para cerrar sesión -->
-    <a (click)="logout()" class="btn" style="cursor: pointer;">
+    <!-- Espaciador para empujar el logout abajo -->
+    <div class="sidebar-spacer"></div>
+
+    <!-- Cerrar sesión -->
+    <a (click)="logout()" class="btn logout-btn">
       <img src="Iconos/cerrars.png" alt="Cerrar sesión" />
-      Cerrar sesión
+      <span>Cerrar sesión</span>
     </a>
   </aside>
 
@@ -35,8 +37,9 @@
     </header>
 
     <main>
-      <!-- Aquí se renderiza el hijo activo -->
-      <router-outlet></router-outlet>
+      <div class="page-content">
+        <router-outlet></router-outlet>
+      </div>
     </main>
   </div>
 </div>

@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+
 /* Reset y estilos base */
 * {
   margin: 0;
@@ -10,7 +13,7 @@
   display: flex;
   height: 100vh;
   background: linear-gradient(135deg, #f8f6ff 0%, #f0f0f0 100%);
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Poppins', system-ui, sans-serif;
   overflow: hidden;
 }
 
