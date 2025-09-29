@@ -2,28 +2,29 @@
   <!-- Sidebar -->
   <aside class="sidebar">
 
-    <a href="manager/clientes" class="btn">
-      <img src="Iconos/clientes.png" alt="Mi cuenta" />
+    <!-- Cambia href por routerLink -->
+    <a routerLink="clientes" class="btn" routerLinkActive="active">
+      <img src="Iconos/clientes.png" alt="Clientes" />
       Clientes
     </a>
 
-    <a href="manager/creditos" class="btn">
-      <img src="Iconos/creditos.png" alt="Transferencias" />
+    <a routerLink="creditos" class="btn" routerLinkActive="active">
+      <img src="Iconos/creditos.png" alt="Creditos" />
       Creditos
     </a>
 
-    <a href="manager/prestamos" class="btn">
-      <img src="Iconos/prestamos2.png" alt="Movimientos" />
+    <a routerLink="prestamos" class="btn" routerLinkActive="active">
+      <img src="Iconos/prestamos2.png" alt="Prestamos" />
       Prestamos
     </a>
 
-    <a href="manager/transferencias" class="btn">
-      <img src="Iconos/transferencias2.png" alt="Credito" />
+    <a routerLink="transferencias" class="btn" routerLinkActive="active">
+      <img src="Iconos/transferencias2.png" alt="Transferencias" />
       Transferencias
     </a>
 
-
-    <a href="" class="btn">
+    <!-- Para cerrar sesión -->
+    <a (click)="logout()" class="btn" style="cursor: pointer;">
       <img src="Iconos/cerrars.png" alt="Cerrar sesión" />
       Cerrar sesión
     </a>

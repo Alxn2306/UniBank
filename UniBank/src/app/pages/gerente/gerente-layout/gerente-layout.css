@@ -86,3 +86,22 @@ main {
   padding: 20px;
   background: white;
 }
+
+.btn.active {
+  background-color: #e0e0e0;
+  border-left: 4px solid #007bff;
+}
+
+.btn {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  color: inherit;
+}
+
+.btn:hover {
+  background-color: #f5f5f5;
+}

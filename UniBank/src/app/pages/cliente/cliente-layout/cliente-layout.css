@@ -1,90 +1,244 @@
+/* Reset y estilos base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 /* Estilos generales del layout */
 .app-container {
   display: flex;
   height: 100vh;
+  background: linear-gradient(135deg, #f8f6ff 0%, #f0f0f0 100%);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  overflow: hidden;
 }
 
+/* Sidebar fijo y organizado */
 .sidebar {
-  width: 200px;
-  background: #f0f0f0;
-  padding: 10px;
+  width: 220px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 20px 15px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  border-right: 1px solid rgba(138, 77, 245, 0.1);
+  box-shadow: 4px 0 20px rgba(138, 77, 245, 0.08);
+  overflow-y: auto;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1000;
 }
 
-/* Unificación: aplica a <a> y <button> */
-.sidebar a,
-.sidebar button {
+/* Botones del sidebar - ESTILOS UNIFICADOS */
+.sidebar .btn {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px;
-  background: #e6dffb;
-  border-radius: 8px;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(230, 223, 251, 0.8);
+  border-radius: 12px;
   cursor: pointer;
   font-weight: 500;
-  text-decoration: none;  /* para los <a> */
-  color: inherit;         /* hereda el color de texto */
-  border: none;           /* para los <button> */
-  transition: background 0.3s ease;
+  text-decoration: none;
+  color: #333;
+  border: 1px solid rgba(138, 77, 245, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  min-height: 50px;
+  position: relative;
+  overflow: hidden;
 }
 
-.sidebar a:hover,
-.sidebar button:hover {
-  background: #d6c9f5;
+.sidebar .btn:hover {
+  background: rgba(214, 201, 245, 0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(138, 77, 245, 0.15);
 }
 
-.sidebar a.active,
-.sidebar button.active {
-  background: #8a4df5;
+.sidebar .btn.active {
+  background: linear-gradient(135deg, #8a4df5 0%, #7a3de5 100%);
   color: #fff;
+  box-shadow: 0 4px 16px rgba(138, 77, 245, 0.3);
 }
 
-.sidebar img {
-  width: 50px;
-  height: 50px;
+.sidebar .btn img {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.3s ease;
 }
 
-.btn {
-  width: 150px;
-  height: 50px;
+.sidebar .btn:hover img {
+  transform: scale(1.1);
 }
 
+/* Espaciador para empujar el logout hacia abajo */
+.sidebar-spacer {
+  flex-grow: 1;
+}
+
+/* Main content ajustado para el sidebar */
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
+  background: rgba(248, 248, 248, 0.9);
+  margin-left: 220px; /* Mismo ancho que el sidebar */
+  min-width: 0;
 }
 
+/* Header con bordes redondeados sutiles */
 .header {
-  height: 60px;
-  background: #8a4df5;
+  height: 70px;
+  background: rgba(138, 77, 245, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 20px rgba(138, 77, 245, 0.15);
+  z-index: 100;
+  /* Bordes redondeados sutiles */
+  border-radius: 0 0 12px 12px; /* Solo redondea las esquinas inferiores */
+  margin: 0 15px; /* Margen para que se vean los bordes redondeados */
+  margin-top: 15px; /* Separación del top */
+  width: calc(100% - 30px); /* Ajusta el ancho considerando los márgenes */
 }
 
 .header .logo {
-  height: 50px;
+  height: 35px;
+  filter: brightness(0) invert(1);
 }
 
 .header .user-icon {
   position: absolute;
-  right: 20px;
+  right: 25px;
+  transition: transform 0.3s ease;
+}
+
+.header .user-icon:hover {
+  transform: scale(1.05);
 }
 
 .header .user-icon img {
-  width: 50px;
-  height: 50px;
-  border-radius: 100px;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Área principal del contenido */
 main {
   flex: 1;
-  padding: 20px;
-  background: white;
+  padding: 25px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  margin: 15px;
+  border-radius: 16px;
+  border: 1px solid rgba(138, 77, 245, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  overflow-y: auto;
+  margin-top: 25px; /* Más espacio después del header redondeado */
 }
 
+/* Contenido específico de la página */
+.page-content {
+  max-width: 100%;
+  overflow-x: hidden;
+}
 
+.page-content h1 {
+  color: #8a4df5;
+  margin-bottom: 20px;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.page-content h2 {
+  color: #333;
+  margin: 25px 0 15px 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.page-content ul {
+  list-style: none;
+  margin: 15px 0;
+}
+
+.page-content li {
+  padding: 8px 0;
+  color: #555;
+  border-bottom: 1px solid rgba(138, 77, 245, 0.1);
+}
+
+.page-content hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #8a4df5, transparent);
+  margin: 25px 0;
+}
+
+/* Scrollbar personalizada */
+.sidebar::-webkit-scrollbar,
+main::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track,
+main::-webkit-scrollbar-track {
+  background: rgba(138, 77, 245, 0.1);
+  border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb,
+main::-webkit-scrollbar-thumb {
+  background: rgba(138, 77, 245, 0.3);
+  border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover,
+main::-webkit-scrollbar-thumb:hover {
+  background: rgba(138, 77, 245, 0.5);
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 70px;
+    padding: 15px 8px;
+  }
+  
+  .sidebar .btn span {
+    display: none;
+  }
+  
+  .main-content {
+    margin-left: 70px;
+  }
+  
+  .sidebar .btn {
+    justify-content: center;
+    padding: 12px 8px;
+  }
+  
+  .header {
+    margin: 0 10px;
+    margin-top: 10px;
+    width: calc(100% - 20px);
+    border-radius: 0 0 8px 8px;
+  }
+  
+  main {
+    margin: 10px;
+    margin-top: 20px;
+  }
+}

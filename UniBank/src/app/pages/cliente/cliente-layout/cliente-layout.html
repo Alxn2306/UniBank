@@ -1,54 +1,55 @@
 <div class="app-container">
   <!-- Sidebar -->
   <aside class="sidebar">
-
-    <a href="cliente-layout/micuenta" class="btn">
+    <a routerLink="micuenta" class="btn" routerLinkActive="active">
       <img src="Iconos/micuenta.png" alt="Mi cuenta" />
-      Mi cuenta
+      <span>Mi cuenta</span>
     </a>
 
-    <a href="cliente-layout/transferencias" class="btn">
+    <a routerLink="transferencias" class="btn" routerLinkActive="active">
       <img src="Iconos/transferencias.png" alt="Transferencias" />
-      Transferencias
+      <span>Transferencias</span>
     </a>
 
-    <a href="/cliente-layout/movimientos" class="btn">
+    <a routerLink="movimientos" class="btn" routerLinkActive="active">
       <img src="Iconos/movimientos.png" alt="Movimientos" />
-      Movimientos
+      <span>Movimientos</span>
     </a>
 
-    <a href="/cliente-layout/credito" class="btn">
-      <img src="Iconos/credito.png" alt="Credito" />
-      Crédito
+    <a routerLink="credito" class="btn" routerLinkActive="active">
+      <img src="Iconos/credito.png" alt="Crédito" />
+      <span>Crédito</span>
     </a>
 
-    <a href="/cliente-layout/prestamos" class="btn">
-      <img src="Iconos/prestamos.png" alt="Prestamos" />
-      Préstamos
+    <a routerLink="prestamos" class="btn" routerLinkActive="active">
+      <img src="Iconos/prestamos.png" alt="Préstamos" />
+      <span>Préstamos</span>
     </a>
 
+    <!-- Espaciador para empujar el logout abajo -->
+    <div class="sidebar-spacer"></div>
 
-    <a href="" class="btn">
+    <!-- Cerrar sesión -->
+    <a (click)="logout()" class="btn">
       <img src="Iconos/cerrars.png" alt="Cerrar sesión" />
-      Cerrar sesión
+      <span>Cerrar sesión</span>
     </a>
   </aside>
 
   <!-- Contenido principal -->
   <div class="main-content">
     <header class="header">
-      <img src="Iconos/Unibank2.png" alt="Logo" class="logo" />
+      <img src="Iconos/Unibank2.png" alt="Logo Unibank" class="logo" />
       <div class="user-icon">
         <img src="Imagenes/USUARIO.jpg" alt="Usuario" />
       </div>
     </header>
 
     <main>
-      <!-- Aquí se renderiza el hijo activo -->
-      <router-outlet></router-outlet>
+      <div class="page-content">
+        <!-- Aquí va el contenido específico de cada página -->
+        <router-outlet></router-outlet>
+      </div>
     </main>
   </div>
 </div>
-
-
-
