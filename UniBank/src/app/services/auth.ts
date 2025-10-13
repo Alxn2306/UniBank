@@ -1,4 +1,3 @@
-// services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -29,6 +28,11 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
+  // 🟢 Nuevo método de registro
+  register(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/register`, data);
+  }
+
   login(loginData: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, loginData);
   }
@@ -51,76 +55,37 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
-  // === MÉTODOS NUEVOS PARA LOS GUARDS ===
-
-  /**
-   * Obtiene el rol del usuario actualmente autenticado
-   */
   getCurrentUserRole(): string | null {
     const user = this.getUser();
     return user ? user.rol : null;
   }
 
-  /**
-   * Verifica si el usuario actual tiene un rol específico
-   */
   hasRole(role: string): boolean {
     const userRole = this.getCurrentUserRole();
     return userRole === role;
   }
 
-  /**
-   * Verifica el token con el backend para mayor seguridad
-   */
   verifyToken(): Observable<any> {
     const token = this.getToken();
-    
-    if (!token) {
-      // Retornar un observable con error si no hay token
-      return new Observable(observer => {
-        observer.error('No hay token disponible');
-      });
-    }
-
     return this.http.get(`${this.apiUrl}/auth/verify`, {
-      headers: { 
-        Authorization: `Bearer ${token}` 
-      }
+      headers: { Authorization: `Bearer ${token}` }
     });
   }
 
-  /**
-   * Verifica si el usuario está autenticado y tiene un rol válido
-   */
   isValidUser(): boolean {
-    if (!this.isAuthenticated()) {
-      return false;
-    }
-
+    if (!this.isAuthenticated()) return false;
     const userRole = this.getCurrentUserRole();
     const validRoles = ['cliente', 'ejecutivo', 'manager'];
-    
     return validRoles.includes(userRole || '');
   }
 
-  /**
-   * Redirige al usuario a su página principal según su rol
-   */
   redirectToHomePage(router: any): void {
     const userRole = this.getCurrentUserRole();
-    
-    switch(userRole?.toLowerCase()) {
-      case 'cliente':
-        router.navigate(['/cliente-layout/micuenta']);
-        break;
-      case 'ejecutivo':
-        router.navigate(['/ejecutivo-layout/datoscliente']);
-        break;
-      case 'manager':
-        router.navigate(['/manager']);
-        break;
-      default:
-        router.navigate(['/']);
+    switch (userRole?.toLowerCase()) {
+      case 'cliente': router.navigate(['/cliente-layout/micuenta']); break;
+      case 'ejecutivo': router.navigate(['/ejecutivo-layout/datoscliente']); break;
+      case 'manager': router.navigate(['/gerente-layout/clientes']); break;
+      default: router.navigate(['']);
     }
   }
 }

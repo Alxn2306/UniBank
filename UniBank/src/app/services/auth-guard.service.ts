@@ -18,8 +18,8 @@ export class AuthGuardService implements CanActivate {
       return true;
     }
     
-    // Redirigir al login si no está autenticado
-    this.router.navigate(['/']);
+
+    this.router.navigate(['']);
     return false;
   }
 }

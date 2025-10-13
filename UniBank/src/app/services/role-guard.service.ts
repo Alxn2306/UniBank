@@ -1,4 +1,4 @@
-// src/app/services/role-guard.service.ts (versión mejorada)
+//role-guard-servise
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { AuthService } from './auth';
@@ -15,16 +15,14 @@ export class RoleGuardService implements CanActivate {
 
   canActivate(route: any): boolean {
     try {
-      // Verificar autenticación primero
       if (!this.authService.isAuthenticated()) {
         console.warn('Usuario no autenticado, redirigiendo al inicio');
-        this.router.navigate(['/']);
+        this.router.navigate(['']);
         return false;
       }
 
       const expectedRole = route.data?.['expectedRole'];
       
-      // Verificar que la ruta tenga el rol esperado definido
       if (!expectedRole) {
         console.error('Rol esperado no definido en la ruta:', route);
         this.redirectToDefault();
@@ -33,14 +31,13 @@ export class RoleGuardService implements CanActivate {
 
       const userRole = this.authService.getCurrentUserRole();
       
-      // Verificar si el usuario tiene un rol válido
       if (!userRole) {
         console.warn('Usuario sin rol definido');
         this.redirectToDefault();
         return false;
       }
 
-      // Verificar si el usuario tiene el rol requerido
+
       if (userRole === expectedRole) {
         return true;
       }
@@ -65,7 +62,7 @@ export class RoleGuardService implements CanActivate {
         this.router.navigate(['/ejecutivo-layout/datoscliente']);
         break;
       case 'manager':
-        this.router.navigate(['/manager']);
+        this.router.navigate(['/gerente-layout/clientes']);
         break;
       default:
         this.redirectToDefault();
@@ -73,6 +70,6 @@ export class RoleGuardService implements CanActivate {
   }
 
   private redirectToDefault(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['']);
   }
 }

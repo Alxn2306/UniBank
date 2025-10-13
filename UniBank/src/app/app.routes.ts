@@ -12,7 +12,6 @@ import { Prestamos } from './pages/cliente/prestamos/prestamos';
 import { Transferencias } from './pages/cliente/transferencias/transferencias';
 import { ManagerLayout } from './pages/manager/manager-layout/manager-layout';
 import { Clientes } from './pages/manager/clientes/clientes';
-import { Manager } from './pages/manager/manager';
 import { Creditos } from './pages/manager/creditos/creditos';
 import { EjecutivoLayout } from './pages/ejecutivo/ejecutivo-layout/ejecutivo-layout';
 import { Datoscliente } from './pages/ejecutivo/datoscliente/datoscliente';

@@ -1,5 +1,4 @@
 <div class="register-container">
-  <!-- Lado izquierdo -->
   <div class="form-section">
     <div class="logo">
       <img src="Iconos/Unibank.png" alt="Logo" class="logo-img" />
@@ -10,29 +9,25 @@
 
     <h2>Crear cuenta</h2>
 
-    <form>
-      <input type="text" placeholder="Nombre completo" required />
-      <input type="tel" placeholder="Número de celular" required />
-      <input type="date" placeholder="Fecha de nacimiento" required />
-      <input type="email" placeholder="Correo" required />
-      <input type="password" placeholder="Contraseña" required />
-
-      <label class="file-upload">
-        <span>Identificación</span>
-        <input type="file" />
-      </label>
+    <form (ngSubmit)="registrarUsuario()">
+      <input type="text" [(ngModel)]="nombre_usuario" name="nombre_usuario" placeholder="Nombre completo" required />
+      <input type="tel" [(ngModel)]="telefono" name="telefono" placeholder="Número de celular" required />
+      <input type="email" [(ngModel)]="correo" name="correo" placeholder="Correo electrónico" required />
+      <input type="password" [(ngModel)]="contrasena" name="contrasena" placeholder="Contraseña" required />
 
       <label class="terms">
         <input type="checkbox" required />
         Acepto los términos y políticas
       </label>
 
-      <button type="submit" class="register-btn">Registrar</button>
+      <button type="submit" class="register-btn" [disabled]="loading">
+        {{ loading ? 'Registrando...' : 'Registrar' }}
+      </button>
     </form>
   </div>
 
-  <!-- Lado derecho (imagen) -->
   <div class="image-section">
     <img src="Imagenes/bank.png" alt="Banco digital" />
   </div>
 </div>
+
