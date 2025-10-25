@@ -15,6 +15,13 @@
       <input type="email" [(ngModel)]="correo" name="correo" placeholder="Correo electrónico" required />
       <input type="password" [(ngModel)]="contrasena" name="contrasena" placeholder="Contraseña" required />
 
+      <!-- NUEVO: selector de rol -->
+      <select [(ngModel)]="rol_id" name="rol_id" required>
+        <option [value]="1">Cliente</option>
+        <option [value]="2">Ejecutivo</option>
+        <option [value]="3">Manager</option>
+      </select>
+
       <label class="terms">
         <input type="checkbox" required />
         Acepto los términos y políticas
@@ -30,4 +37,3 @@
     <img src="Imagenes/bank.png" alt="Banco digital" />
   </div>
 </div>
-

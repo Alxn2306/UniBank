@@ -39,7 +39,6 @@ app.get('/', (req, res) => {
   });
 });
 
-
 // 🟢 LOGIN
 app.post('/api/auth/login', async (req, res) => {
   const { correo, contrasena } = req.body;
@@ -105,7 +104,6 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-
 // 🟢 REGISTRO
 app.post('/api/auth/register', async (req, res) => {
   const { nombre_usuario, correo, telefono, contrasena, rol_id } = req.body;
@@ -121,7 +119,6 @@ app.post('/api/auth/register', async (req, res) => {
   try {
     connection = await getConnection();
 
-    // Verificar si el correo ya existe
     const [existing] = await connection.execute(
       'SELECT id FROM usuarios WHERE correo = ?',
       [correo]
@@ -133,18 +130,24 @@ app.post('/api/auth/register', async (req, res) => {
       });
     }
 
-    // Hash contraseña
     const hashedPassword = await bcrypt.hash(contrasena, 10);
 
-    // Insertar usuario
-    await connection.execute(`
+    const [result] = await connection.execute(`
       INSERT INTO usuarios (nombre_usuario, correo, telefono, contrasena, rol_id)
       VALUES (?, ?, ?, ?, ?)
     `, [nombre_usuario, correo, telefono, hashedPassword, rol_id]);
 
+    const usuarioId = result.insertId;
+
+    // 🟢 Crear cuenta con saldo inicial
+    await connection.execute(
+      'INSERT INTO cuentas (usuario_id, saldo) VALUES (?, ?)',
+      [usuarioId, 10000]
+    );
+
     res.json({
       success: true,
-      mensaje: 'Usuario registrado correctamente con contraseña cifrada'
+      mensaje: 'Usuario registrado correctamente con cuenta inicial de $10,000'
     });
 
   } catch (error) {
@@ -157,7 +160,6 @@ app.post('/api/auth/register', async (req, res) => {
     if (connection) await connection.end();
   }
 });
-
 
 // 🟢 Verificar Token
 function verifyToken(req, res, next) {
@@ -183,9 +185,10 @@ app.get('/api/user/profile', verifyToken, async (req, res) => {
 
     const [rows] = await connection.execute(`
       SELECT 
-        u.id, u.nombre_usuario, u.correo, u.telefono, r.nombre as rol
+        u.id, u.nombre_usuario, u.correo, u.telefono, r.nombre as rol, c.saldo
       FROM usuarios u
       JOIN roles r ON u.rol_id = r.id
+      JOIN cuentas c ON u.id = c.usuario_id
       WHERE u.id = ?
     `, [req.user.id]);
 
@@ -196,6 +199,78 @@ app.get('/api/user/profile', verifyToken, async (req, res) => {
   } catch (error) {
     console.error('Error obteniendo perfil:', error);
     res.status(500).json({ success: false, mensaje: 'Error interno del servidor' });
+  } finally {
+    if (connection) await connection.end();
+  }
+});
+
+// 🟢 NUEVO ENDPOINT: Transferencia entre cuentas
+app.post('/api/transferencia', verifyToken, async (req, res) => {
+  const { destinatario_id, monto } = req.body;
+  const remitente_id = req.user.id;
+
+  if (!destinatario_id || !monto || monto <= 0) {
+    return res.status(400).json({ success: false, mensaje: 'Datos inválidos' });
+  }
+
+  let connection;
+  try {
+    connection = await getConnection();
+
+    // Obtener saldo actual del remitente
+    const [[remitenteCuenta]] = await connection.execute(
+      'SELECT saldo FROM cuentas WHERE usuario_id = ?',
+      [remitente_id]
+    );
+
+    if (!remitenteCuenta)
+      return res.status(404).json({ success: false, mensaje: 'Cuenta del remitente no encontrada' });
+
+    const saldoActual = parseFloat(remitenteCuenta.saldo);
+    const comision =
+      monto >= 1500
+        ? (monto / 100) * 15
+        : (monto / 100) * 10;
+    const totalDescuento = monto + comision;
+
+    if (saldoActual < totalDescuento) {
+      return res.status(400).json({ success: false, mensaje: 'Saldo insuficiente' });
+    }
+
+    // Verificar existencia del destinatario
+    const [[destinatarioCuenta]] = await connection.execute(
+      'SELECT saldo FROM cuentas WHERE usuario_id = ?',
+      [destinatario_id]
+    );
+    if (!destinatarioCuenta)
+      return res.status(404).json({ success: false, mensaje: 'Cuenta destino no encontrada' });
+
+    // Actualizar saldos
+    await connection.execute(
+      'UPDATE cuentas SET saldo = saldo - ? WHERE usuario_id = ?',
+      [totalDescuento, remitente_id]
+    );
+
+    await connection.execute(
+      'UPDATE cuentas SET saldo = saldo + ? WHERE usuario_id = ?',
+      [monto, destinatario_id]
+    );
+
+    // Registrar la transferencia
+    await connection.execute(`
+      INSERT INTO transferencias (remitente_id, destinatario_id, monto, comision)
+      VALUES (?, ?, ?, ?)
+    `, [remitente_id, destinatario_id, monto, comision]);
+
+    res.json({
+      success: true,
+      mensaje: `Transferencia exitosa de $${monto} con comisión de $${comision}`,
+      comision
+    });
+
+  } catch (error) {
+    console.error('Error en transferencia:', error);
+    res.status(500).json({ success: false, mensaje: 'Error al procesar la transferencia' });
   } finally {
     if (connection) await connection.end();
   }
@@ -232,5 +307,3 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
-
-

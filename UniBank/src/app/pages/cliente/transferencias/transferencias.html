@@ -1,1 +1,12 @@
-<p>aqui se mostraran las tranferencias del cliente</p>
+<h2>Transferencias</h2>
+
+<div class="transfer-container">
+  <label>Destinatario (ID usuario):</label>
+  <input type="number" [(ngModel)]="destinatario_id" placeholder="Ej. 2" />
+
+  <label>Monto a transferir:</label>
+  <input type="number" [(ngModel)]="monto" placeholder="Ej. 500" />
+
+  <button (click)="realizarTransferencia()">Enviar Transferencia</button>
+
+</div>

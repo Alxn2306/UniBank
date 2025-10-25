@@ -1,4 +1,4 @@
-// login.component.ts
+// logincliente.ts
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -39,15 +39,23 @@ export class Logincliente {
     this.authService.login(this.loginData).subscribe({
       next: (response) => {
         this.loading = false;
-        // Guardar el token y datos del usuario
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.usuario));
-        
-        // Redirigir según el rol
-        this.redirectByRole(response.usuario.rol);
+
+        if (response.success) {
+          // 🟢 Guardar el token y usuario
+          localStorage.setItem('token', response.token);
+          localStorage.setItem('user', JSON.stringify(response.usuario));
+
+          console.log('Usuario logueado:', response.usuario);
+
+          // 🟢 Redirigir según el rol
+          this.redirectByRole(response.usuario.rol);
+        } else {
+          this.errorMessage = response.mensaje || 'Credenciales incorrectas';
+        }
       },
       error: (error) => {
         this.loading = false;
+        console.error('Error de login:', error);
         this.errorMessage = error.error?.mensaje || 'Error al iniciar sesión';
       }
     });
@@ -56,7 +64,8 @@ export class Logincliente {
   private redirectByRole(rol: string) {
     switch(rol.toLowerCase()) {
       case 'cliente':
-        this.router.navigate(['/cliente-layout/micuenta']);
+        // 🟢 Redirigir directamente al historial de movimientos
+        this.router.navigate(['/cliente-layout/movimientos']);
         break;
       case 'ejecutivo':
         this.router.navigate(['/ejecutivo-layout/datoscliente']);

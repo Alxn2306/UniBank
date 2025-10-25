@@ -16,7 +16,7 @@ export class Register {
   telefono = '';
   correo = '';
   contrasena = '';
-  rol_id = 1;
+  rol_id = 1; // valor por defecto
   loading = false;
 
   constructor(private authService: AuthService, private router: Router) {}
@@ -40,7 +40,7 @@ export class Register {
       next: (res) => {
         this.loading = false;
         alert(res.mensaje || 'Registro exitoso');
-        this.router.navigate(['/login']); // cambia la ruta según tu proyecto
+        this.router.navigate(['/login']);
       },
       error: (err) => {
         this.loading = false;
@@ -50,3 +50,4 @@ export class Register {
     });
   }
 }
+
