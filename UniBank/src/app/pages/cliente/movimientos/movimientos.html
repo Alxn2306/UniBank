@@ -1,1 +1,44 @@
-<p>Aqui se mostraran los movimientos del cliente</p>
+<div class="movimientos-container">
+  <h2>Mis Movimientos</h2>
+  
+  <!-- Cargando -->
+  <div *ngIf="cargando">
+    <p>🔄 Cargando movimientos...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="!cargando && error">
+    <p>❌ {{ error }}</p>
+    <button (click)="cargarMovimientos()">Reintentar</button>
+  </div>
+
+  <!-- Sin movimientos -->
+  <div *ngIf="!cargando && !error && movimientos.length === 0">
+    <p>No hay movimientos para mostrar.</p>
+  </div>
+
+  <!-- Lista -->
+  <div *ngIf="!cargando && !error && movimientos.length > 0">
+    <p style="color: green;">✅ {{ movimientos.length }} movimientos</p>
+    
+    <div *ngFor="let mov of movimientos; let i = index" 
+         style="border: 1px solid #ccc; padding: 10px; margin: 10px 0;">
+      
+      <p><strong>#{{ i + 1 }}</strong></p>
+      <p><strong>Fecha:</strong> {{ mov.fecha | date:'dd/MM/yyyy HH:mm' }}</p>
+      <p><strong>Monto:</strong> ${{ mov.monto }}</p>
+      <p><strong>Comisión:</strong> ${{ mov.comision }}</p>
+      
+      <p *ngIf="mov.remitente_id === clienteId">
+        <strong>Para:</strong> {{ mov.destinatario }}
+        <span style="color: red;">↘️ Enviado</span>
+      </p>
+      
+      <p *ngIf="mov.destinatario_id === clienteId">
+        <strong>De:</strong> {{ mov.remitente }}
+        <span style="color: green;">↗️ Recibido</span>
+      </p>
+      
+    </div>
+  </div>
+</div>

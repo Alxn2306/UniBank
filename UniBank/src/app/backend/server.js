@@ -290,6 +290,41 @@ app.post('/api/auth/logout', verifyToken, (req, res) => {
   res.json({ success: true, mensaje: 'Logout exitoso' });
 });
 
+
+// 🟢 Obtener movimientos (transferencias realizadas y recibidas)
+app.get('/api/movimientos', verifyToken, async (req, res) => {
+  let connection;
+  try {
+    connection = await getConnection();
+    const usuario_id = req.user.id;
+
+    const [rows] = await connection.execute(`
+      SELECT 
+        t.id,
+        t.monto,
+        t.comision,
+        t.fecha,
+        t.remitente_id,
+        t.destinatario_id,
+        r.nombre_usuario AS remitente,
+        d.nombre_usuario AS destinatario
+      FROM transferencias t
+      JOIN usuarios r ON t.remitente_id = r.id
+      JOIN usuarios d ON t.destinatario_id = d.id
+      WHERE t.remitente_id = ? OR t.destinatario_id = ?
+      ORDER BY t.fecha DESC
+    `, [usuario_id, usuario_id]);
+
+    res.json({ success: true, movimientos: rows });
+
+  } catch (error) {
+    console.error('Error obteniendo movimientos:', error);
+    res.status(500).json({ success: false, mensaje: 'Error al obtener movimientos' });
+  } finally {
+    if (connection) await connection.end();
+  }
+});
+
 // 🟠 Middleware de errores
 app.use((req, res) => {
   res.status(404).json({ success: false, mensaje: 'Ruta no encontrada' });
@@ -298,6 +333,7 @@ app.use((error, req, res, next) => {
   console.error('Error no manejado:', error);
   res.status(500).json({ success: false, mensaje: 'Error interno del servidor' });
 });
+
 
 // 🟢 Iniciar servidor
 app.listen(PORT, () => {
