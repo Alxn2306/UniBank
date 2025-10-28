@@ -4,6 +4,35 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+
+
+const nodemailer = require('nodemailer');
+
+// Configurar Gmail
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'frigaro123@gmail.com', // ← Cambia esto
+    pass: 'nqleknvfvuqldeos'    // ← Contraseña de aplicación de Gmail
+  }
+});
+
+// Función simple para enviar correos
+async function enviarCorreo(destinatario, asunto, html) {
+  try {
+    await transporter.sendMail({
+      from: '"UniBank" <tu_correo@gmail.com>',
+      to: destinatario,
+      subject: asunto,
+      html: html
+    });
+    console.log('✅ Correo enviado a:', destinatario);
+  } catch (error) {
+    console.error('❌ Error enviando correo:', error);
+  }
+}
+
+
 const app = express();
 const PORT = 3000;
 const JWT_SECRET = 'unibank_secret_key_2024';
@@ -262,6 +291,34 @@ app.post('/api/transferencia', verifyToken, async (req, res) => {
       VALUES (?, ?, ?, ?)
     `, [remitente_id, destinatario_id, monto, comision]);
 
+    // Obtener correos de remitente y destinatario
+const [[remitenteData]] = await connection.execute(
+  'SELECT nombre_usuario, correo FROM usuarios WHERE id = ?',
+  [remitente_id]
+);
+
+const [[destinatarioData]] = await connection.execute(
+  'SELECT nombre_usuario, correo FROM usuarios WHERE id = ?',
+  [destinatario_id]
+);
+
+// Correo al que envió
+const htmlRemitente = `
+  <h2 style="color: #7c3aed;">✅ Transferencia Exitosa</h2>
+  <p>Hola <strong>${remitenteData.nombre_usuario}</strong>,</p>
+  <p>Enviaste $${monto} a ${destinatarioData.nombre_usuario}</p>
+  <p>Comisión: $${comision.toFixed(2)}</p>
+`;
+enviarCorreo(remitenteData.correo, 'Transferencia Realizada - UniBank', htmlRemitente);
+
+// Correo al que recibió
+const htmlDestinatario = `
+  <h2 style="color: #7c3aed;">💰 Recibiste Dinero</h2>
+  <p>Hola <strong>${destinatarioData.nombre_usuario}</strong>,</p>
+  <p>Recibiste $${monto} de ${remitenteData.nombre_usuario}</p>
+`;
+enviarCorreo(destinatarioData.correo, 'Recibiste una Transferencia - UniBank', htmlDestinatario);
+
     res.json({
       success: true,
       mensaje: `Transferencia exitosa de $${monto} con comisión de $${comision}`,
@@ -271,6 +328,136 @@ app.post('/api/transferencia', verifyToken, async (req, res) => {
   } catch (error) {
     console.error('Error en transferencia:', error);
     res.status(500).json({ success: false, mensaje: 'Error al procesar la transferencia' });
+  } finally {
+    if (connection) await connection.end();
+  }
+});
+
+// 🟢 RETIRO SIN TARJETA
+app.post('/api/retiro', verifyToken, async (req, res) => {
+  const { monto } = req.body;
+  const usuario_id = req.user.id;
+
+  if (!monto || monto <= 0) {
+    return res.status(400).json({ success: false, mensaje: 'Monto inválido' });
+  }
+
+  let connection;
+  try {
+    connection = await getConnection();
+
+    // Verificar saldo
+    const [[cuenta]] = await connection.execute(
+      'SELECT saldo FROM cuentas WHERE usuario_id = ?',
+      [usuario_id]
+    );
+
+    if (!cuenta) {
+      return res.status(404).json({ success: false, mensaje: 'Cuenta no encontrada' });
+    }
+
+    const saldoActual = parseFloat(cuenta.saldo);
+    const comision = monto * 0.02; // 2% de comisión
+    const totalDescuento = monto + comision;
+
+    if (saldoActual < totalDescuento) {
+      return res.status(400).json({ success: false, mensaje: 'Saldo insuficiente' });
+    }
+
+    // Generar código único de 8 dígitos
+    const codigo = Math.floor(10000000 + Math.random() * 90000000).toString();
+
+    // Actualizar saldo
+    await connection.execute(
+      'UPDATE cuentas SET saldo = saldo - ? WHERE usuario_id = ?',
+      [totalDescuento, usuario_id]
+    );
+
+    // Registrar retiro (necesitamos crear esta tabla)
+    await connection.execute(`
+      INSERT INTO retiros (usuario_id, monto, comision, codigo, estado)
+      VALUES (?, ?, ?, ?, 'pendiente')
+    `, [usuario_id, monto, comision, codigo]);
+
+    // Obtener correo del usuario
+const [[usuarioData]] = await connection.execute(
+  'SELECT nombre_usuario, correo FROM usuarios WHERE id = ?',
+  [usuario_id]
+);
+
+// Enviar correo con el código
+const htmlRetiro = `
+  <h2 style="color: #7c3aed;">🏧 Código de Retiro</h2>
+  <p>Hola <strong>${usuarioData.nombre_usuario}</strong>,</p>
+  <h1 style="background: #f0f0f0; padding: 20px; text-align: center; font-size: 32px; letter-spacing: 6px;">${codigo}</h1>
+  <p>Monto: $${monto}</p>
+  <p>Comisión: $${comision.toFixed(2)}</p>
+  <p>⚠️ Usa este código en el cajero</p>
+`;
+enviarCorreo(usuarioData.correo, 'Tu Código de Retiro - UniBank', htmlRetiro);
+
+    res.json({
+      success: true,
+      mensaje: 'Retiro generado exitosamente',
+      codigo,
+      monto,
+      comision,
+      total: totalDescuento
+    });
+
+  } catch (error) {
+    console.error('Error en retiro:', error);
+    res.status(500).json({ success: false, mensaje: 'Error al procesar el retiro' });
+  } finally {
+    if (connection) await connection.end();
+  }
+});
+
+// 🟢 CANCELAR RETIRO (devuelve el dinero a la cuenta)
+app.post('/api/retiro/cancelar', verifyToken, async (req, res) => {
+  const { codigo } = req.body;
+  const usuario_id = req.user.id;
+
+  if (!codigo) {
+    return res.status(400).json({ success: false, mensaje: 'Código requerido' });
+  }
+
+  let connection;
+  try {
+    connection = await getConnection();
+
+    const [[retiro]] = await connection.execute(
+      'SELECT * FROM retiros WHERE codigo = ? AND usuario_id = ? AND estado = "pendiente"',
+      [codigo, usuario_id]
+    );
+
+    if (!retiro) {
+      return res.status(404).json({ 
+        success: false, 
+        mensaje: 'Código inválido, no es tuyo o ya fue procesado' 
+      });
+    }
+
+    const totalDevolver = parseFloat(retiro.monto) + parseFloat(retiro.comision);
+    await connection.execute(
+      'UPDATE cuentas SET saldo = saldo + ? WHERE usuario_id = ?',
+      [totalDevolver, usuario_id]
+    );
+
+    await connection.execute(
+      'UPDATE retiros SET estado = "cancelado" WHERE codigo = ?',
+      [codigo]
+    );
+
+    res.json({
+      success: true,
+      mensaje: `Retiro cancelado. Se devolvieron $${totalDevolver.toFixed(2)} a tu cuenta`,
+      monto_devuelto: totalDevolver
+    });
+
+  } catch (error) {
+    console.error('Error cancelando retiro:', error);
+    res.status(500).json({ success: false, mensaje: 'Error al cancelar el retiro' });
   } finally {
     if (connection) await connection.end();
   }

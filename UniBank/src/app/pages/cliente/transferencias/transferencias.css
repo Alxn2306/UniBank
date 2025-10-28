@@ -6,13 +6,63 @@
   font-family: 'Poppins', sans-serif;
 }
 
+.page-container {
+  width: 100%;
+  max-width: 500px;
+  margin-top: 40px;
+}
+
+h2 {
+  color: #7c3aed;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+h3 {
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+/* TABS */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  color: #666;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s;
+  font-family: 'Poppins', sans-serif;
+}
+
+.tabs button.active {
+  color: #7c3aed;
+  border-bottom-color: #7c3aed;
+  font-weight: 600;
+}
+
+.tabs button:hover {
+  background: #f5f5f5;
+}
+
+/* CONTAINER */
 .transfer-container {
   background: #fff;
   border-radius: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   padding: 30px 40px;
-  width: 450px;
-  margin-top: 60px;
   text-align: center;
   transition: all 0.3s ease;
 }
@@ -22,11 +72,23 @@
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
 }
 
-h2 {
-  color: #7c3aed;
-  margin-bottom: 25px;
+/* INFO BOX */
+.info-box {
+  background: #e8f4fd;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  border-left: 4px solid #7c3aed;
+  text-align: left;
 }
 
+.info-box p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+/* FORMULARIO */
 label {
   display: block;
   text-align: left;
@@ -43,6 +105,8 @@ input {
   border-radius: 10px;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
 }
 
 input:focus {
@@ -54,21 +118,166 @@ button {
   background: #7c3aed;
   color: #fff;
   border: none;
-  padding: 10px 20px;
+  padding: 12px 20px;
   border-radius: 12px;
   cursor: pointer;
   font-weight: 600;
   transition: background 0.2s ease, transform 0.1s ease;
   width: 100%;
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   background: #682bd7;
   transform: scale(1.02);
 }
 
-p {
-  margin-top: 15px;
-  color: #555;
+button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.codigo-box {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 25px;
+  border-radius: 12px;
+  margin: 20px 0;
+}
+
+.codigo-box .label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 10px;
   font-weight: 500;
+}
+
+.codigo-box .codigo {
+  font-size: 36px;
+  font-weight: bold;
+  color: white;
+  letter-spacing: 6px;
+  font-family: 'Courier New', monospace;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.detalles {
+  text-align: left;
+  margin: 20px 0;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 10px;
+}
+
+.detalles p {
+  margin: 8px 0;
+  color: #333;
+}
+
+.detalles .total {
+  color: #7c3aed;
+  font-size: 18px;
+  border-top: 2px solid #ddd;
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+.advertencia {
+  color: #ff9800;
+  font-size: 14px;
+  margin: 15px 0;
+  font-weight: 500;
+}
+
+.btn-cerrar {
+  padding: 12px 30px;
+  background: #7c3aed;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  width: auto;
+  font-weight: 600;
+}
+
+.btn-cerrar:hover {
+  background: #682bd7;
+}
+
+/* BOTONES DEL MODAL */
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modal-buttons button {
+  flex: 1;
+  width: auto;
+}
+
+.btn-cancelar {
+  background: #dc3545;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.btn-cancelar:hover:not(:disabled) {
+  background: #c82333;
+}
+
+.btn-cancelar:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }

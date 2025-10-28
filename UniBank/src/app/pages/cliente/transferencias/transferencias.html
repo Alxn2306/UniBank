@@ -1,12 +1,76 @@
-<h2>Transferencias</h2>
+<div class="page-container">
+  <h2>Operaciones Bancarias</h2>
 
-<div class="transfer-container">
-  <label>Destinatario (ID usuario):</label>
-  <input type="number" [(ngModel)]="destinatario_id" placeholder="Ej. 2" />
+  <!-- TABS -->
+  <div class="tabs">
+    <button 
+      [class.active]="tabActiva === 'transferencia'"
+      (click)="cambiarTab('transferencia')">
+      💸 Transferencia
+    </button>
+    <button 
+      [class.active]="tabActiva === 'retiro'"
+      (click)="cambiarTab('retiro')">
+      🏧 Retiro sin Tarjeta
+    </button>
+  </div>
 
-  <label>Monto a transferir:</label>
-  <input type="number" [(ngModel)]="monto" placeholder="Ej. 500" />
+  <!-- TRANSFERENCIA -->
+  <div *ngIf="tabActiva === 'transferencia'" class="transfer-container">
+    <h3>Realizar Transferencia</h3>
+    
+    <label>Destinatario (ID usuario):</label>
+    <input type="number" [(ngModel)]="destinatario_id" placeholder="Ej. 2" />
 
-  <button (click)="realizarTransferencia()">Enviar Transferencia</button>
+    <label>Monto a transferir:</label>
+    <input type="number" [(ngModel)]="monto" placeholder="Ej. 500" />
 
+    <button (click)="realizarTransferencia()">Enviar Transferencia</button>
+  </div>
+
+  <!-- RETIRO SIN TARJETA -->
+  <div *ngIf="tabActiva === 'retiro'" class="transfer-container">
+    <h3>Retiro sin Tarjeta</h3>
+    
+    <div class="info-box">
+      <p>ℹ️ Genera un código para retirar efectivo en cualquier cajero</p>
+      <p>💰 Comisión: 2% del monto</p>
+    </div>
+
+    <label>Monto a Retirar:</label>
+    <input type="number" [(ngModel)]="montoRetiro" placeholder="Ej. 1000" />
+
+    <button (click)="generarRetiro()" [disabled]="cargandoRetiro">
+      {{ cargandoRetiro ? '⏳ Generando...' : '🏧 Generar Código' }}
+    </button>
+  </div>
+
+  <!-- MODAL CON EL CÓDIGO -->
+  <div *ngIf="mostrarCodigo" class="modal-overlay" (click)="cerrarModalCodigo()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>✅ Retiro Generado</h3>
+      
+      <div class="codigo-box">
+        <p class="label">Tu código de retiro:</p>
+        <p class="codigo">{{ codigoRetiro }}</p>
+      </div>
+
+      <div class="detalles">
+        <p><strong>Monto:</strong> ${{ montoRetiro }}</p>
+        <p><strong>Comisión (2%):</strong> ${{ comisionRetiro.toFixed(2) }}</p>
+        <p class="total"><strong>Total descontado:</strong> ${{ totalRetiro.toFixed(2) }}</p>
+      </div>
+
+      <p class="advertencia">⚠️ Guarda este código. Lo necesitarás en el cajero.</p>
+
+      <div class="modal-buttons">
+        <button (click)="cancelarRetiro()" 
+                [disabled]="cancelandoRetiro"
+                class="btn-cancelar">
+          {{ cancelandoRetiro ? '⏳ Cancelando...' : '❌ Cancelar Retiro' }}
+        </button>
+        <button (click)="cerrarModalCodigo()" class="btn-cerrar">Cerrar</button>
+      </div>
+    </div>
+  </div>
 </div>
