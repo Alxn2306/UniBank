@@ -19,17 +19,17 @@
   align-items: center;
   padding: 15px;
   margin: 10px 0;
-  border-radius: 8px;
-  border-left: 5px solid #ccc;
+  border-radius: 15px; 
+  border: 2px solid #b392ed; 
 }
 
 .salida {
-  border-left-color: #f44336;
+  border-left: 5px solid #f44336;
   background: #ffebee;
 }
 
 .entrada {
-  border-left-color: #4caf50;
+  border-left: 5px solid #4caf50;
   background: #e8f5e8;
 }
 
@@ -45,4 +45,11 @@
 
 .movimiento-info p {
   margin: 5px 0;
+}
+
+.icon-inline {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  margin-right: 4px;
 }

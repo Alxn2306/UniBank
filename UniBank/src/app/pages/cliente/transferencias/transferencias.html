@@ -6,12 +6,12 @@
     <button 
       [class.active]="tabActiva === 'transferencia'"
       (click)="cambiarTab('transferencia')">
-      💸 Transferencia
+      <img src="Iconos/tra.png" alt="check" class="icon-inline"> Transferencia
     </button>
     <button 
       [class.active]="tabActiva === 'retiro'"
       (click)="cambiarTab('retiro')">
-      🏧 Retiro sin Tarjeta
+      <img src="Iconos/retiro.png" alt="check" class="icon-inline"> Retiro sin Tarjeta
     </button>
   </div>
 
@@ -33,8 +33,8 @@
     <h3>Retiro sin Tarjeta</h3>
     
     <div class="info-box">
-      <p>ℹ️ Genera un código para retirar efectivo en cualquier cajero</p>
-      <p>💰 Comisión: 2% del monto</p>
+      <p><img src="Iconos/admiracion.png" alt="check" class="icon-inline"> Genera un código para retirar efectivo en cualquier cajero</p>
+      <p> <img src="Iconos/com.png" alt="check" class="icon-inline"> Comisión: 2% del monto</p>
     </div>
 
     <label>Monto a Retirar:</label>
@@ -48,7 +48,7 @@
   <!-- MODAL CON EL CÓDIGO -->
   <div *ngIf="mostrarCodigo" class="modal-overlay" (click)="cerrarModalCodigo()">
     <div class="modal-content" (click)="$event.stopPropagation()">
-      <h3>✅ Retiro Generado</h3>
+      <h3><img src="Iconos/check.png" alt="check" class="icon-inline"> Retiro Generado</h3>
       
       <div class="codigo-box">
         <p class="label">Tu código de retiro:</p>
@@ -61,7 +61,7 @@
         <p class="total"><strong>Total descontado:</strong> ${{ totalRetiro.toFixed(2) }}</p>
       </div>
 
-      <p class="advertencia">⚠️ Guarda este código. Lo necesitarás en el cajero.</p>
+      <p class="advertencia"> <img src="Iconos/admiracion.png" alt="check" class="icon-inline"> Guarda este código. Lo necesitarás en el cajero.</p>
 
       <div class="modal-buttons">
         <button (click)="cancelarRetiro()" 

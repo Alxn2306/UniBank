@@ -29,7 +29,7 @@ export class RecuperarPassword {
   ) {}
 
   solicitarCodigo() {
-  console.log('🔵 Paso actual ANTES:', this.paso);
+  console.log('Paso actual ANTES:', this.paso);
   
   if (!this.correo) {
     this.mostrarError('Por favor ingresa tu correo');
@@ -37,31 +37,31 @@ export class RecuperarPassword {
   }
 
   this.loading = true;
-  console.log('🔵 Loading TRUE');
+  console.log('Loading TRUE');
   
   this.http.post('http://localhost:3000/api/auth/solicitar-codigo', { correo: this.correo })
     .subscribe({
       next: (response: any) => {
-        console.log('✅ Respuesta completa:', response);
-        console.log('✅ response.success:', response.success);
+        console.log('Respuesta completa:', response);
+        console.log('response.success:', response.success);
         
         if (response.success) {
-          console.log('🟢 Entrando al IF de success');
+          console.log('Entrando al IF de success');
           this.paso = 2;
-          console.log('🔵 Paso cambiado a:', this.paso);
+          console.log('Paso cambiado a:', this.paso);
           this.cdr.detectChanges();
-          console.log('🔵 detectChanges ejecutado');
+          console.log('detectChanges ejecutado');
           this.mostrarExito(response.mensaje);
         } else {
-          console.log('🔴 Success es false');
+          console.log('Success es false');
           this.mostrarError(response.mensaje);
         }
         
         this.loading = false;
-        console.log('🔵 Loading FALSE:', this.loading);
+        console.log('Loading FALSE:', this.loading);
       },
       error: (err) => {
-        console.error('❌ Error completo:', err);
+        console.error('Error completo:', err);
         this.mostrarError(err.error?.mensaje || 'Error al enviar el código');
         this.loading = false;
       }

@@ -281,3 +281,9 @@ button:disabled {
   background: #ccc;
   cursor: not-allowed;
 }
+.icon-inline {
+  width: 30px;
+  height: 30px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
