@@ -1,3 +1,4 @@
+//app.routes.ts
 import { Routes } from '@angular/router';
 import { Home } from './pages/home/home';
 import { Register } from './pages/register/register';
@@ -20,6 +21,7 @@ import { Datoscuenta } from './pages/ejecutivo/datoscuenta/datoscuenta';
 import { GerenteLayout } from './pages/gerente/gerente-layout/gerente-layout';
 import { AuthGuardService } from './services/auth-guard.service';
 import { RoleGuardService } from './services/role-guard.service';
+import { RecuperarPassword } from './pages/recuperar-password/recuperar-password';
 
 export const routes: Routes = [
     {path: '', component: Home},
@@ -27,6 +29,7 @@ export const routes: Routes = [
     {path: 'logincliente', component: Logincliente},
     {path: 'loginejecutivo', component: Loginejecutivo},
     {path: 'loginmanager', component: Loginmanager},
+    {path: 'recuperar-password', component: RecuperarPassword},
 
     // === REDIRECCIONES PARA RUTAS PRINCIPALES ===
     {path: 'cliente-layout', redirectTo: 'cliente-layout/micuenta', pathMatch: 'full'},
@@ -67,7 +70,7 @@ export const routes: Routes = [
     {path: 'gerente-layout',
         component: GerenteLayout,
         canActivate: [AuthGuardService, RoleGuardService],
-        data: { expectedRole: 'manager' }, // Mismo rol que manager
+        data: { expectedRole: 'manager' }, 
         children: [
             {path: '', redirectTo: 'clientes', pathMatch: 'full'},
             {path: 'clientes', component: Clientes},

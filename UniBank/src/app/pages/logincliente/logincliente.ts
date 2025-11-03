@@ -1,6 +1,5 @@
-// logincliente.ts
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router'; // ← Agrega RouterLink
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth';
@@ -8,7 +7,7 @@ import { AuthService } from '../../services/auth';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink], // ← Agrega RouterLink aquí
   templateUrl: './logincliente.html',
   styleUrls: ['./logincliente.css']
 })
@@ -65,7 +64,7 @@ export class Logincliente {
     switch(rol.toLowerCase()) {
       case 'cliente':
         // 🟢 Redirigir directamente al historial de movimientos
-        this.router.navigate(['/cliente-layout/movimientos']);
+        this.router.navigate(['/cliente-layout/micuenta']);
         break;
       case 'ejecutivo':
         this.router.navigate(['/ejecutivo-layout/datoscliente']);

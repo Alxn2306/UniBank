@@ -64,13 +64,13 @@ export class Transferencias {
     }).subscribe({
       next: (res: any) => {
         this.mensaje = res.mensaje;
-        alert(`✅ Transferencia realizada correctamente\nMonto: $${this.monto}\n${res.mensaje}`);
+        alert(`Transferencia realizada correctamente\nMonto: $${this.monto}\n${res.mensaje}`);
         this.destinatario_id = 0;
         this.monto = 0;
       },
       error: (err) => {
         this.mensaje = err.error?.mensaje || 'Error en la transferencia';
-        alert(`❌ ${this.mensaje}`);
+        alert(`${this.mensaje}`);
       }
     });
   }
@@ -112,7 +112,7 @@ export class Transferencias {
     this.retiroService.cancelarRetiro(this.codigoRetiro).subscribe({
       next: (response) => {
         if (response.success) {
-          alert(`✅ ${response.mensaje}`);
+          alert(`${response.mensaje}`);
           this.cerrarModalCodigo();
         } else {
           alert(response.mensaje || 'Error al cancelar el retiro');

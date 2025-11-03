@@ -26,34 +26,34 @@ export class Movimientos implements OnInit {
     if (userStr) {
       const user = JSON.parse(userStr);
       this.clienteId = user.id;
-      console.log('👤 Cliente ID:', this.clienteId);
+      console.log('Cliente ID:', this.clienteId);
     }
 
     this.cargarMovimientos();
   }
 
   cargarMovimientos(): void {
-    console.log('🔄 Iniciando carga de movimientos...');
+    console.log('Iniciando carga de movimientos...');
     this.cargando = true;
     this.error = null;
     
     this.movimientosService.obtenerMovimientos().subscribe({
       next: (response) => {
-        console.log('📦 Respuesta completa:', response);
+        console.log('Respuesta completa:', response);
         
         if (response.success) {
           this.movimientos = response.movimientos || [];
-          console.log('✅ Movimientos cargados:', this.movimientos.length);
+          console.log('Movimientos cargados:', this.movimientos.length);
         } else {
           this.error = response.mensaje || 'Error al cargar movimientos';
         }
         
         this.cargando = false;
         this.cdr.detectChanges();  // ← Fuerza la actualización de la vista
-        console.log('🏁 Carga completada. Cargando:', this.cargando);
+        console.log('Carga completada. Cargando:', this.cargando);
       },
       error: (err) => {
-        console.error('❌ Error:', err);
+        console.error('Error:', err);
         this.error = 'Error al conectar con el servidor';
         this.cargando = false;
         this.cdr.detectChanges();  // ← Fuerza la actualización de la vista

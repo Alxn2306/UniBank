@@ -26,9 +26,9 @@ async function enviarCorreo(destinatario, asunto, html) {
       subject: asunto,
       html: html
     });
-    console.log('✅ Correo enviado a:', destinatario);
+    console.log('Correo enviado a:', destinatario);
   } catch (error) {
-    console.error('❌ Error enviando correo:', error);
+    console.error('Error enviando correo:', error);
   }
 }
 
@@ -128,6 +128,153 @@ app.post('/api/auth/login', async (req, res) => {
   } catch (error) {
     console.error('Error en login:', error);
     res.status(500).json({ success: false, mensaje: 'Error interno del servidor' });
+  } finally {
+    if (connection) await connection.end();
+  }
+});
+
+
+// Almacenar códigos temporales en memoria
+const codigosRecuperacion = new Map();
+
+// 🟢 SOLICITAR CÓDIGO DE RECUPERACIÓN
+app.post('/api/auth/solicitar-codigo', async (req, res) => {
+  const { correo } = req.body;
+
+  if (!correo) {
+    return res.status(400).json({ success: false, mensaje: 'Correo requerido' });
+  }
+
+  let connection;
+  try {
+    connection = await getConnection();
+
+    // Verificar que el correo existe
+    const [rows] = await connection.execute(
+      'SELECT id, nombre_usuario FROM usuarios WHERE correo = ?',
+      [correo]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        mensaje: 'No existe una cuenta con ese correo' 
+      });
+    }
+
+    const usuario = rows[0];
+
+    // Generar código de 6 dígitos
+    const codigo = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Guardar código con expiración de 15 minutos
+    codigosRecuperacion.set(correo, {
+      codigo,
+      expira: Date.now() + 15 * 60 * 1000
+    });
+
+    // Plantilla del correo
+    const htmlCorreo = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+          <h1 style="color: white; margin: 0;">🏦 UniBank</h1>
+        </div>
+        
+        <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
+          <h2 style="color: #333;">Recuperación de Contraseña</h2>
+          <p style="color: #666; font-size: 16px;">Hola <strong>${usuario.nombre_usuario}</strong>,</p>
+          <p style="color: #666; font-size: 16px;">Usa este código para recuperar tu contraseña:</p>
+          
+          <div style="background: white; padding: 20px; text-align: center; margin: 30px 0; border-radius: 8px; border: 2px dashed #667eea;">
+            <h1 style="color: #667eea; font-size: 36px; letter-spacing: 8px; margin: 0;">${codigo}</h1>
+          </div>
+          
+          <p style="color: #666; font-size: 14px;">Este código expira en <strong>15 minutos</strong>.</p>
+          <p style="color: #666; font-size: 14px;">Si no solicitaste esto, ignora este correo.</p>
+          
+          <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+          <p style="color: #999; font-size: 12px; text-align: center;">UniBank - Tu banco digital de confianza</p>
+        </div>
+      </div>
+    `;
+
+    // Enviar correo
+    await enviarCorreo(correo, '🔐 Código de Recuperación - UniBank', htmlCorreo);
+
+    res.json({ 
+      success: true, 
+      mensaje: 'Código enviado a tu correo. Revisa tu bandeja de entrada.' 
+    });
+
+  } catch (error) {
+    console.error('Error en recuperación:', error);
+    res.status(500).json({ success: false, mensaje: 'Error al enviar el código' });
+  } finally {
+    if (connection) await connection.end();
+  }
+});
+
+// 🟢 VERIFICAR CÓDIGO Y CAMBIAR CONTRASEÑA
+app.post('/api/auth/cambiar-password', async (req, res) => {
+  const { correo, codigo, nuevaContrasena } = req.body;
+
+  if (!correo || !codigo || !nuevaContrasena) {
+    return res.status(400).json({ 
+      success: false, 
+      mensaje: 'Faltan datos requeridos' 
+    });
+  }
+
+  // Verificar si existe el código
+  const datoCodigo = codigosRecuperacion.get(correo);
+
+  if (!datoCodigo) {
+    return res.status(400).json({ 
+      success: false, 
+      mensaje: 'No se ha solicitado código para este correo' 
+    });
+  }
+
+  // Verificar si el código expiró
+  if (Date.now() > datoCodigo.expira) {
+    codigosRecuperacion.delete(correo);
+    return res.status(400).json({ 
+      success: false, 
+      mensaje: 'El código ha expirado. Solicita uno nuevo.' 
+    });
+  }
+
+  // Verificar si el código es correcto
+  if (datoCodigo.codigo !== codigo) {
+    return res.status(400).json({ 
+      success: false, 
+      mensaje: 'Código incorrecto' 
+    });
+  }
+
+  // Código válido, actualizar contraseña
+  let connection;
+  try {
+    connection = await getConnection();
+
+    const hashedPassword = await bcrypt.hash(nuevaContrasena, 10);
+
+    await connection.execute(
+      'UPDATE usuarios SET contrasena = ? WHERE correo = ?',
+      [hashedPassword, correo]
+    );
+
+    // Eliminar el código usado
+    codigosRecuperacion.delete(correo);
+
+    res.json({ 
+      success: true, 
+      mensaje: 'Contraseña actualizada correctamente. Ya puedes iniciar sesión.' 
+    });
+
+  } catch (error) {
+    console.error('Error actualizando contraseña:', error);
+    res.status(500).json({ success: false, mensaje: 'Error al actualizar la contraseña' });
   } finally {
     if (connection) await connection.end();
   }
@@ -524,9 +671,9 @@ app.use((error, req, res, next) => {
 
 // 🟢 Iniciar servidor
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor UniBank ejecutándose en http://localhost:${PORT}`);
-  console.log(`📊 Base de datos: ${dbConfig.database}`);
-  console.log(`🌐 CORS habilitado para: http://localhost:4200`);
+  console.log(`Servidor UniBank ejecutándose en http://localhost:${PORT}`);
+  console.log(`Base de datos: ${dbConfig.database}`);
+  console.log(`CORS habilitado para: http://localhost:4200`);
 });
 
 module.exports = app;
