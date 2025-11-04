@@ -60,7 +60,7 @@ async function getConnection() {
   }
 }
 
-// 🟢 Prueba del servidor
+//Prueba del servidor
 app.get('/', (req, res) => {
   res.json({
     success: true,
@@ -68,7 +68,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// 🟢 LOGIN
+//LOGIN
 app.post('/api/auth/login', async (req, res) => {
   const { correo, contrasena } = req.body;
 
@@ -137,7 +137,7 @@ app.post('/api/auth/login', async (req, res) => {
 // Almacenar códigos temporales en memoria
 const codigosRecuperacion = new Map();
 
-// 🟢 SOLICITAR CÓDIGO DE RECUPERACIÓN
+//SOLICITAR CÓDIGO DE RECUPERACIÓN
 app.post('/api/auth/solicitar-codigo', async (req, res) => {
   const { correo } = req.body;
 
@@ -214,7 +214,7 @@ app.post('/api/auth/solicitar-codigo', async (req, res) => {
   }
 });
 
-// 🟢 VERIFICAR CÓDIGO Y CAMBIAR CONTRASEÑA
+//VERIFICAR CÓDIGO Y CAMBIAR CONTRASEÑA
 app.post('/api/auth/cambiar-password', async (req, res) => {
   const { correo, codigo, nuevaContrasena } = req.body;
 
@@ -280,7 +280,7 @@ app.post('/api/auth/cambiar-password', async (req, res) => {
   }
 });
 
-// 🟢 REGISTRO
+//REGISTRO
 app.post('/api/auth/register', async (req, res) => {
   const { nombre_usuario, correo, telefono, contrasena, rol_id } = req.body;
 
@@ -315,7 +315,7 @@ app.post('/api/auth/register', async (req, res) => {
 
     const usuarioId = result.insertId;
 
-    // 🟢 Crear cuenta con saldo inicial
+    // Crear cuenta con saldo inicial
     await connection.execute(
       'INSERT INTO cuentas (usuario_id, saldo) VALUES (?, ?)',
       [usuarioId, 10000]
@@ -337,7 +337,7 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
-// 🟢 Verificar Token
+// Verificar Token
 function verifyToken(req, res, next) {
   const authHeader = req.header('Authorization');
   const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.substring(7) : null;
@@ -353,7 +353,7 @@ function verifyToken(req, res, next) {
   }
 }
 
-// 🟢 Perfil usuario
+//Perfil usuario
 app.get('/api/user/profile', verifyToken, async (req, res) => {
   let connection;
   try {
@@ -380,7 +380,7 @@ app.get('/api/user/profile', verifyToken, async (req, res) => {
   }
 });
 
-// 🟢 NUEVO ENDPOINT: Transferencia entre cuentas
+//NUEVO ENDPOINT: Transferencia entre cuentas
 app.post('/api/transferencia', verifyToken, async (req, res) => {
   const { destinatario_id, monto } = req.body;
   const remitente_id = req.user.id;
@@ -480,7 +480,7 @@ enviarCorreo(destinatarioData.correo, 'Recibiste una Transferencia - UniBank', h
   }
 });
 
-// 🟢 RETIRO SIN TARJETA
+// RETIRO SIN TARJETA
 app.post('/api/retiro', verifyToken, async (req, res) => {
   const { monto } = req.body;
   const usuario_id = req.user.id;
@@ -560,7 +560,7 @@ enviarCorreo(usuarioData.correo, 'Tu Código de Retiro - UniBank', htmlRetiro);
   }
 });
 
-// 🟢 CANCELAR RETIRO (devuelve el dinero a la cuenta)
+//CANCELAR RETIRO (devuelve el dinero a la cuenta)
 app.post('/api/retiro/cancelar', verifyToken, async (req, res) => {
   const { codigo } = req.body;
   const usuario_id = req.user.id;
@@ -610,7 +610,9 @@ app.post('/api/retiro/cancelar', verifyToken, async (req, res) => {
   }
 });
 
-// 🟢 Verificación de token (frontend)
+
+
+// Verificación de token (frontend)
 app.get('/api/auth/verify', verifyToken, (req, res) => {
   res.json({
     success: true,
@@ -619,13 +621,13 @@ app.get('/api/auth/verify', verifyToken, (req, res) => {
   });
 });
 
-// 🟢 Logout simbólico
+// Logout simbólico
 app.post('/api/auth/logout', verifyToken, (req, res) => {
   res.json({ success: true, mensaje: 'Logout exitoso' });
 });
 
 
-// 🟢 Obtener movimientos (transferencias realizadas y recibidas)
+// Obtener movimientos (transferencias realizadas y recibidas)
 app.get('/api/movimientos', verifyToken, async (req, res) => {
   let connection;
   try {
@@ -659,7 +661,218 @@ app.get('/api/movimientos', verifyToken, async (req, res) => {
   }
 });
 
-// 🟠 Middleware de errores
+
+
+//SOLICITAR CRÉDITO
+app.post('/api/credito/solicitar', verifyToken, async (req, res) => {
+  const { monto, identificacion } = req.body;
+  const usuario_id = req.user.id;
+
+  if (!monto || !identificacion || monto <= 0) {
+    return res.status(400).json({ success: false, mensaje: 'Datos inválidos' });
+  }
+
+  let connection;
+  try {
+    connection = await getConnection();
+
+    await connection.execute(`
+      INSERT INTO creditos (usuario_id, tipo, monto, identificacion, estado)
+      VALUES (?, 'solicitado', ?, ?, 'pendiente')
+    `, [usuario_id, monto, identificacion]);
+
+    // Enviar correo de confirmación
+    const [[usuarioData]] = await connection.execute(
+      'SELECT nombre_usuario, correo FROM usuarios WHERE id = ?',
+      [usuario_id]
+    );
+
+    const htmlCredito = `
+      <h2 style="color: #7c3aed;">📋 Solicitud de Crédito Recibida</h2>
+      <p>Hola <strong>${usuarioData.nombre_usuario}</strong>,</p>
+      <p>Tu solicitud de crédito por <strong>$${monto}</strong> ha sido recibida.</p>
+      <p>Estado: <span style="color: orange;">⏳ Pendiente de revisión</span></p>
+      <p>Te notificaremos pronto sobre el resultado.</p>
+    `;
+    enviarCorreo(usuarioData.correo, 'Solicitud de Crédito - UniBank', htmlCredito);
+
+    res.json({
+      success: true,
+      mensaje: 'Solicitud de crédito enviada. Está pendiente de revisión.'
+    });
+
+  } catch (error) {
+    console.error('Error solicitando crédito:', error);
+    res.status(500).json({ success: false, mensaje: 'Error al procesar la solicitud' });
+  } finally {
+    if (connection) await connection.end();
+  }
+});
+
+// VERIFICAR ELEGIBILIDAD PARA OFERTA DE CRÉDITO
+app.get('/api/credito/elegibilidad', verifyToken, async (req, res) => {
+  const usuario_id = req.user.id;
+
+  let connection;
+  try {
+    connection = await getConnection();
+
+    // Obtener saldo actual
+    const [[cuenta]] = await connection.execute(
+      'SELECT saldo FROM cuentas WHERE usuario_id = ?',
+      [usuario_id]
+    );
+
+    // Contar movimientos (transferencias enviadas + recibidas)
+    const [[movimientos]] = await connection.execute(`
+      SELECT COUNT(*) as total FROM transferencias 
+      WHERE remitente_id = ? OR destinatario_id = ?
+    `, [usuario_id, usuario_id]);
+
+    const saldo = parseFloat(cuenta?.saldo || 0);
+    const totalMovimientos = parseInt(movimientos?.total || 0);
+
+    const elegible = saldo >= 2000 && totalMovimientos >= 10;
+
+    res.json({
+      success: true,
+      elegible,
+      saldo,
+      movimientos: totalMovimientos,
+      credito_disponible: elegible ? 10000 : 0
+    });
+
+  } catch (error) {
+    console.error('Error verificando elegibilidad:', error);
+    res.status(500).json({ success: false, mensaje: 'Error al verificar elegibilidad' });
+  } finally {
+    if (connection) await connection.end();
+  }
+});
+
+// ACEPTAR OFERTA DE CRÉDITO
+app.post('/api/credito/aceptar-oferta', verifyToken, async (req, res) => {
+  const { monto } = req.body;
+  const usuario_id = req.user.id;
+
+  if (!monto || monto <= 0 || monto > 10000) {
+    return res.status(400).json({ success: false, mensaje: 'Monto inválido' });
+  }
+
+  let connection;
+  try {
+    connection = await getConnection();
+
+    // Verificar elegibilidad nuevamente
+    const [[cuenta]] = await connection.execute(
+      'SELECT saldo FROM cuentas WHERE usuario_id = ?',
+      [usuario_id]
+    );
+
+    const [[movimientos]] = await connection.execute(`
+      SELECT COUNT(*) as total FROM transferencias 
+      WHERE remitente_id = ? OR destinatario_id = ?
+    `, [usuario_id, usuario_id]);
+
+    const saldo = parseFloat(cuenta?.saldo || 0);
+    const totalMovimientos = parseInt(movimientos?.total || 0);
+
+    if (saldo < 2000 || totalMovimientos < 10) {
+      return res.status(403).json({ 
+        success: false, 
+        mensaje: 'No cumples los requisitos para el crédito' 
+      });
+    }
+
+    // Registrar crédito ofrecido
+    await connection.execute(`
+      INSERT INTO creditos (usuario_id, tipo, monto, estado)
+      VALUES (?, 'ofrecido', ?, 'aprobado')
+    `, [usuario_id, monto]);
+
+    // Agregar el crédito a la cuenta
+    await connection.execute(
+      'UPDATE cuentas SET saldo = saldo + ? WHERE usuario_id = ?',
+      [monto, usuario_id]
+    );
+
+    // Enviar correo
+    const [[usuarioData]] = await connection.execute(
+      'SELECT nombre_usuario, correo FROM usuarios WHERE id = ?',
+      [usuario_id]
+    );
+
+    const htmlOferta = `
+      <h2 style="color: #10b981;"> Crédito Aprobado</h2>
+      <p>Hola <strong>${usuarioData.nombre_usuario}</strong>,</p>
+      <p>¡Felicidades! Has aceptado un crédito de <strong>$${monto}</strong></p>
+      <p>El dinero ya está disponible en tu cuenta.</p>
+    `;
+    enviarCorreo(usuarioData.correo, 'Crédito Aprobado - UniBank', htmlOferta);
+
+    res.json({
+      success: true,
+      mensaje: `Crédito de $${monto} agregado a tu cuenta`,
+      nuevo_saldo: parseFloat(cuenta.saldo) + parseFloat(monto)
+    });
+
+  } catch (error) {
+    console.error('Error aceptando oferta:', error);
+    res.status(500).json({ success: false, mensaje: 'Error al procesar el crédito' });
+  } finally {
+    if (connection) await connection.end();
+  }
+});
+
+// OBTENER ESTADO DE CRÉDITO DEL USUARIO
+app.get('/api/credito/mi-credito', verifyToken, async (req, res) => {
+  const usuario_id = req.user.id;
+
+  let connection;
+  try {
+    connection = await getConnection();
+
+    // Buscar el crédito más reciente del usuario
+    const [rows] = await connection.execute(`
+      SELECT id, tipo, monto, estado, fecha_solicitud
+      FROM creditos
+      WHERE usuario_id = ?
+      ORDER BY fecha_solicitud DESC
+      LIMIT 1
+    `, [usuario_id]);
+
+    if (rows.length === 0) {
+      return res.json({
+        success: true,
+        tieneCredito: false,
+        credito: null
+      });
+    }
+
+    const credito = rows[0];
+
+    res.json({
+      success: true,
+      tieneCredito: true,
+      credito: {
+        id: credito.id,
+        tipo: credito.tipo,
+        monto: parseFloat(credito.monto),
+        estado: credito.estado,
+        fecha: credito.fecha_solicitud
+      }
+    });
+
+  } catch (error) {
+    console.error('Error obteniendo crédito:', error);
+    res.status(500).json({ success: false, mensaje: 'Error al obtener crédito' });
+  } finally {
+    if (connection) await connection.end();
+  }
+});
+
+
+// Middleware de errores
 app.use((req, res) => {
   res.status(404).json({ success: false, mensaje: 'Ruta no encontrada' });
 });
@@ -669,7 +882,7 @@ app.use((error, req, res, next) => {
 });
 
 
-// 🟢 Iniciar servidor
+// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`Servidor UniBank ejecutándose en http://localhost:${PORT}`);
   console.log(`Base de datos: ${dbConfig.database}`);

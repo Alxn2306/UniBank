@@ -1,13 +1,64 @@
-
 <div class="card">
+  <!-- SECCIÓN TARJETA -->
   <div class="tarjeta">
-    <p> Mi Cuenta</p>
+    <p>Mi Cuenta</p>
     <img src="Imagenes/Tarjeta.png" alt="Tarjeta del cliente" width="250" />
   </div>
-<img src="Iconos/tarjeta.png" alt="Tarjeta del cliente" width="250" />
+
+  <!-- INFORMACIÓN DE CUENTA -->
+  <img src="Iconos/tarjeta.png" alt="Tarjeta del cliente" width="250" />
   <p><strong>Nombre:</strong> {{ usuario?.nombre_usuario }}</p>
   <p><strong>Correo:</strong> {{ usuario?.correo }}</p>
   <p><strong>Saldo actual:</strong> ${{ usuario?.saldo }}</p>
 
-  <button (click)="recargarPerfil()">Actualizar Saldo</button>
+  <button (click)="actualizarTodo()">Actualizar</button>
+
+  <!-- DIVISOR -->
+  <div class="divisor"></div>
+
+  <!-- SECCIÓN MI CRÉDITO -->
+  <div class="tarjeta">
+    <p>Mi Credito</p>
+    <img src="Imagenes/Tarjeta.png" alt="Tarjeta del cliente" width="250" />
+
+    <!-- CARGANDO -->
+    <div *ngIf="cargandoCredito" class="cargando-credito">
+      <div class="spinner-small"></div>
+      <p>Cargando información...</p>
+    </div>
+
+    <!-- NO TIENE CRÉDITO -->
+    <div *ngIf="!cargandoCredito && !tieneCredito" class="sin-credito">
+      <div class="icono-sin-credito">📭</div>
+      <p>No cuentas con un crédito</p>
+      <small>Solicita uno desde la sección de Créditos</small>
+    </div>
+
+    <!-- CRÉDITO PENDIENTE -->
+    <div *ngIf="!cargandoCredito && tieneCredito && credito && credito.estado === 'pendiente'" class="credito-pendiente">
+      <div class="icono-pendiente">⏳</div>
+      <p class="titulo-estado">Crédito Pendiente</p>
+      <p class="monto-credito">${{ credito.monto.toLocaleString() }}</p>
+      <small class="texto-estado">Tu solicitud está en revisión</small>
+      <small class="fecha-solicitud">Solicitado: {{ credito.fecha | date:'dd/MM/yyyy' }}</small>
+    </div>
+
+    <!-- CRÉDITO APROBADO/ACTIVO -->
+    <div *ngIf="!cargandoCredito && tieneCredito && credito && (credito.estado === 'aprobado' || credito.estado === 'activo')" class="credito-aprobado">
+      <div class="icono-aprobado"><img src="Iconos/check.png" alt="check" class="icon-inline"> </div>
+      <p class="titulo-estado">Crédito Activo</p>
+      <p class="monto-credito">${{ credito.monto.toLocaleString() }}</p>
+      <small class="texto-estado">Tu crédito ha sido aprobado</small>
+      <small class="fecha-solicitud">Aprobado: {{ credito.fecha | date:'dd/MM/yyyy' }}</small>
+    </div>
+
+    <!-- CRÉDITO RECHAZADO -->
+    <div *ngIf="!cargandoCredito && tieneCredito && credito && credito.estado === 'rechazado'" class="credito-rechazado">
+      <div class="icono-rechazado">❌</div>
+      <p class="titulo-estado">Crédito Rechazado</p>
+      <p class="monto-credito">${{ credito.monto.toLocaleString() }}</p>
+      <small class="texto-estado">Tu solicitud no fue aprobada</small>
+      <small class="fecha-solicitud">{{ credito.fecha | date:'dd/MM/yyyy' }}</small>
+    </div>
+  </div>
 </div>

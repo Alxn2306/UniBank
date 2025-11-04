@@ -2,6 +2,48 @@
   padding: 20px;
 }
 
+/* Header con título y botón */
+.header-movimientos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.header-movimientos h2 {
+  margin: 0;
+  color: #8a4df5;
+}
+
+/* Botón Estado de Cuenta */
+.btn-estado-cuenta {
+  background: linear-gradient(135deg, #8a4df5 0%, #7a3de5 100%);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(138, 77, 245, 0.3);
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn-estado-cuenta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(138, 77, 245, 0.4);
+  background: linear-gradient(135deg, #7a3de5 0%, #6a2dd5 100%);
+}
+
+.btn-estado-cuenta:active {
+  transform: translateY(0);
+}
+
 .cargando, .error, .sin-movimientos {
   text-align: center;
   padding: 20px;
@@ -52,4 +94,17 @@
   height: 20px;
   vertical-align: middle;
   margin-right: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-movimientos {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .btn-estado-cuenta {
+    width: 100%;
+    justify-content: center;
+  }
 }

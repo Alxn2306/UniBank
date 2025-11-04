@@ -1,5 +1,16 @@
 <div class="movimientos-container">
-  <h2>Mis Movimientos</h2>
+  <div class="header-movimientos">
+    <h2>Mis Movimientos</h2>
+    
+    <!-- Botón Estado de Cuenta -->
+    <button 
+      *ngIf="!cargando && !error && movimientos.length > 0"
+      (click)="descargarEstadoCuenta()" 
+      class="btn-estado-cuenta">
+      <img src="Iconos/check.png" alt="PDF" class="icon-inline">
+      Descargar Estado de Cuenta
+    </button>
+  </div>
   
   <!-- Cargando -->
   <div *ngIf="cargando" class="cargando">

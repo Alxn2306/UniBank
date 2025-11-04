@@ -1,1 +1,130 @@
-<p>Aqui se mostrara el credito del cliente</p>
+<div class="credito-container">
+  
+  <!-- 🎯 SECCIÓN 1: SOLICITAR CRÉDITO -->
+  <div class="seccion-solicitud">
+    <div class="promo-banner">
+      <h1>💳 ¡Solicita tu Crédito Personal!</h1>
+      <p>Obtén el dinero que necesitas con tasas competitivas</p>
+    </div>
+
+    <div class="formulario-credito">
+      <h2>Solicitar Crédito</h2>
+      
+      <div class="form-group">
+        <label for="monto">Monto a solicitar</label>
+        <input 
+          type="number" 
+          id="monto"
+          [(ngModel)]="montoSolicitud" 
+          placeholder="Ej: 5000"
+          min="0"
+          class="input-field">
+      </div>
+
+      <div class="form-group">
+        <label for="identificacion">Número de Identificación (INE/Pasaporte)</label>
+        <input 
+          type="text" 
+          id="identificacion"
+          [(ngModel)]="identificacion" 
+          placeholder="Ej: 1234567890123"
+          maxlength="50"
+          class="input-field">
+      </div>
+
+      <button 
+        (click)="solicitarCredito()" 
+        [disabled]="cargando"
+        class="btn-solicitar">
+        {{ cargando ? 'Procesando...' : 'Enviar Solicitud' }}
+      </button>
+
+      <div *ngIf="mensajeSolicitud" class="mensaje-exito">
+        ✅ {{ mensajeSolicitud }}
+      </div>
+
+      <div *ngIf="errorSolicitud" class="mensaje-error">
+        ❌ {{ errorSolicitud }}
+      </div>
+    </div>
+  </div>
+
+  <!-- ⏳ CARGANDO - AHORA FUERA DE LA SECCIÓN -->
+  <div *ngIf="cargando" class="cargando">
+    <div class="spinner"></div>
+    <p>Verificando tu elegibilidad...</p>
+  </div>
+
+  <!-- 🎁 SECCIÓN 2: OFERTA DE CRÉDITO (solo si NO está cargando) -->
+  <div class="seccion-oferta" *ngIf="!cargando && elegibilidad">
+    
+    <!-- ✅ Usuario ELEGIBLE -->
+    <div *ngIf="elegibilidad.elegible" class="oferta-aprobada">
+      <div class="tarjeta-oferta">
+        <div class="icono-aprobado">🎉</div>
+        <h2>¡Felicidades! Tienes una oferta especial</h2>
+        <p class="texto-oferta">Por tu excelente historial, te ofrecemos:</p>
+        
+        <div class="monto-oferta">
+          <span class="signo-pesos">$</span>
+          <span class="cantidad">{{ montoOferta.toLocaleString() }}</span>
+        </div>
+
+        <div class="requisitos-cumplidos">
+          <div class="requisito">
+            <span class="check">✓</span>
+            <span>Saldo mínimo: ${{ elegibilidad.saldo.toLocaleString() }}</span>
+          </div>
+          <div class="requisito">
+            <span class="check">✓</span>
+            <span>Movimientos: {{ elegibilidad.movimientos }}</span>
+          </div>
+        </div>
+
+        <button 
+          (click)="aceptarOferta()" 
+          [disabled]="cargando"
+          class="btn-aceptar">
+          {{ cargando ? 'Procesando...' : 'Aceptar Oferta' }}
+        </button>
+
+        <p class="condiciones">
+          *Crédito preaprobado. Al aceptar, el dinero se agregará a tu cuenta inmediatamente.
+        </p>
+
+        <div *ngIf="mensajeOferta" class="mensaje-exito-oferta">
+          ✅ {{ mensajeOferta }}
+        </div>
+      </div>
+    </div>
+
+    <!-- ❌ Usuario NO ELEGIBLE -->
+    <div *ngIf="!elegibilidad.elegible" class="oferta-bloqueada">
+      <div class="tarjeta-requisitos">
+        <h3>📊 Construye tu historial crediticio</h3>
+        <p>Para acceder a una oferta de crédito preaprobado, necesitas:</p>
+        
+        <div class="requisito-pendiente">
+          <span [class.cumplido]="elegibilidad.saldo >= 2000" class="indicador">
+            {{ elegibilidad.saldo >= 2000 ? '✓' : '○' }}
+          </span>
+          <span>Tener al menos $2,000 en tu cuenta</span>
+          <span class="estado-actual">(Actual: ${{ elegibilidad.saldo.toLocaleString() }})</span>
+        </div>
+
+        <div class="requisito-pendiente">
+          <span [class.cumplido]="elegibilidad.movimientos >= 10" class="indicador">
+            {{ elegibilidad.movimientos >= 10 ? '✓' : '○' }}
+          </span>
+          <span>Realizar al menos 10 movimientos</span>
+          <span class="estado-actual">(Actual: {{ elegibilidad.movimientos }})</span>
+        </div>
+
+        <p class="motivacion">
+          ¡Sigue usando tu cuenta y pronto tendrás acceso a créditos preaprobados! 💪
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div>
