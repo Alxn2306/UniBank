@@ -1,1 +1,114 @@
-<p>aqui se mostraran las tranferencias del cliente</p>
+<div class="container">
+  <h2>Transferencias</h2>
+
+  <!-- Cuenta origen -->
+  <section class="card">
+    <h3>Cuenta de origen</h3>
+
+    <form [formGroup]="form">
+      <div class="row">
+        <label>Selecciona cuenta</label>
+        <select formControlName="origen_cuenta_id">
+          <option *ngFor="let c of cuentas" [value]="c.id">
+            {{ c.alias }} — ${{ c.saldo | number:'1.2-2' }}
+          </option>
+        </select>
+      </div>
+    </form>
+
+    <div class="hint">
+      Saldo disponible: <b>${{ saldoDisponible | number:'1.2-2' }}</b>
+    </div>
+  </section>
+
+  <!-- Beneficiario -->
+  <section class="card">
+    <h3>Beneficiario</h3>
+
+    <!-- Búsqueda -->
+    <div class="row">
+      <label>Buscar contacto</label>
+      <input type="text" [(ngModel)]="searchText" placeholder="Alias o dato (CLABE, tel, etc.)">
+    </div>
+
+    <div class="contact-list" *ngIf="contactosFiltrados.length; else noContacts">
+      <button class="contact-chip"
+              type="button"
+              *ngFor="let ct of contactosFiltrados"
+              (click)="cargarDesdeContacto(ct)">
+        {{ ct.alias }} · {{ ct.tipo_destino }} · {{ ct.destino_valor }}
+      </button>
+    </div>
+    <ng-template #noContacts>
+      <div class="muted">Sin resultados</div>
+    </ng-template>
+
+    <hr>
+
+    <!-- Agregar contacto -->
+    <h4>Agregar beneficiario</h4>
+    <form [formGroup]="form" class="grid">
+      <div class="row">
+        <label>Alias</label>
+        <!-- este campo pertenece a formContacto -->
+        <input type="text" [formControl]="formContacto.controls['alias']" placeholder="Ej. Mi cuenta nómina">
+      </div>
+
+      <div class="row">
+        <label>Método</label>
+        <select formControlName="tipo_destino" (change)="form.controls['destino_valor'].reset('')">
+          <option value="clabe">CLABE</option>
+          <option value="card">Tarjeta</option>
+          <option value="account">Número de cuenta</option>
+          <option value="phone">Teléfono</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label>Banco destino (ID)</label>
+        <input type="number" formControlName="destino_banco_id" min="1" placeholder="Ej. 1">
+      </div>
+
+      <div class="row">
+        <label>Valor destino</label>
+        <input type="text" formControlName="destino_valor" placeholder="CLABE/tarjeta/cuenta/teléfono">
+      </div>
+
+      <div class="row">
+        <button type="button"
+                class="btn-secondary"
+                (click)="agregarContacto()"
+                [disabled]="!puedeAgregarContacto()">
+          Guardar contacto
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Transferencia -->
+  <section class="card">
+    <h3>Detalle de transferencia</h3>
+
+    <form [formGroup]="form">
+      <div class="row">
+        <label>Monto (MXN)</label>
+        <input type="number" formControlName="monto" min="0.01" step="0.01" placeholder="0.00">
+      </div>
+    </form>
+
+    <div class="summary">
+      <div>Comisión (5% + $10 por cada $1500): <b>${{ comision | number:'1.2-2' }}</b></div>
+      <div>Total a debitar: <b>${{ totalDebitar | number:'1.2-2' }}</b></div>
+      <div *ngIf="saldoInsuficiente" class="error">Saldo insuficiente</div>
+    </div>
+
+    <div class="row right">
+      <button class="btn-primary"
+              type="button"
+              [disabled]="form.invalid || saldoInsuficiente"
+              (click)="enviarTransferencia()">
+        Continuar
+      </button>
+    </div>
+  </section>
+</div>
