@@ -1,7 +1,8 @@
-//auth.ts
-import { Injectable } from '@angular/core';
+// auth.ts
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
 
 export interface LoginResponse {
   success: boolean;
@@ -26,10 +27,15 @@ export interface LoginRequest {
 export class AuthService {
   
   private apiUrl = 'http://localhost:3000/api';
+  private isBrowser: boolean;
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
-  // 🟢 Nuevo método de registro
   register(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/register`, data);
   }
@@ -39,20 +45,25 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    if (this.isBrowser) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
   }
 
   isAuthenticated(): boolean {
+    if (!this.isBrowser) return false;
     return !!localStorage.getItem('token');
   }
 
   getUser() {
+    if (!this.isBrowser) return null;
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
   }
 
   getToken(): string | null {
+    if (!this.isBrowser) return null;
     return localStorage.getItem('token');
   }
 
